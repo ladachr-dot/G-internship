@@ -94,10 +94,13 @@ def build_enriched_table(file_path, top_n=20):
 
     df["rsid"] = df[var_col].apply(extract_rsid)
 
+    df["rsid"] = df[var_col].apply(extract_rsid)
+
     df_filtered = (
         df
-        .dropna(subset=["rsid"])
-        .drop_duplicates(subset=["rsid"])
+        .dropna(subset=["rsid", "score"])  # убираем SNP без score
+        .sort_values("score", ascending=False)  # сортировка по силе эффекта
+        .drop_duplicates(subset=["rsid"])  # один SNP = одна строка
     )
 
     return effect_used, df_filtered.head(top_n).copy()
